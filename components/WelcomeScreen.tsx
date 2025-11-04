@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { CameraIcon, FileTextIcon } from './icons';
+import { CameraIcon, FileTextIcon, MessageSquareIcon } from './icons';
 
 interface WelcomeScreenProps {
   onStart: (payload: {
@@ -9,13 +9,15 @@ interface WelcomeScreenProps {
     useImages: boolean;
     useManualList: boolean;
   }) => void;
+  hasResults: boolean;
+  onGoToResults: () => void;
 }
 
 const ToggleSwitch: React.FC<{ label: string; enabled: boolean; onChange: (enabled: boolean) => void, icon: React.ReactNode }> = ({ label, enabled, onChange, icon }) => (
-    <div className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
+    <div className="flex items-center justify-between">
         <div className="flex items-center">
             {icon}
-            <span className="mr-2 font-medium text-gray-700">{label}</span>
+            <span className="mr-3 font-medium text-gray-700">{label}</span>
         </div>
         <button
             onClick={() => onChange(!enabled)}
@@ -29,7 +31,7 @@ const ToggleSwitch: React.FC<{ label: string; enabled: boolean; onChange: (enabl
 );
 
 
-const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
+const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, hasResults, onGoToResults }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [useImages, setUseImages] = useState(true);
   const [useManualList, setUseManualList] = useState(false);
@@ -48,65 +50,77 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
       onStart({ files, carModel, manualParts, useImages, useManualList });
   };
   
-  const isButtonDisabled = !carModel.trim() || (!useImages && !useManualList) || (useImages && !files);
+  const isButtonDisabled = !carModel.trim() || (!useImages && !useManualList) || (useImages && (!files || files.length === 0));
 
   return (
-    <div className="flex flex-col h-full p-6 space-y-4">
-        <div>
-            <label htmlFor="carModel" className="block text-sm font-bold text-gray-700 mb-1">
-                مدل خودرو*
-            </label>
-            <input 
-                id="carModel"
-                type="text"
-                value={carModel}
-                onChange={(e) => setCarModel(e.target.value)}
-                placeholder="مثال: پژو ۲۰۶ تیپ ۵"
-                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            />
+    <div className="flex flex-col h-full p-6">
+        <div className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl shadow-lg -m-2 mb-6">
+            <div className="flex flex-col items-center text-center">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full text-white mb-3">
+                    <MessageSquareIcon className="w-8 h-8"/>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-800">تخمین خسارت خودرو</h1>
+                <p className="text-sm text-gray-600 mt-1">هزینه تعمیر خودروی خود را هوشمندانه محاسبه کنید</p>
+            </div>
         </div>
 
-        <div className="space-y-2">
-            <ToggleSwitch 
-                label="تحلیل با تصاویر"
-                icon={<CameraIcon className="w-5 h-5 text-gray-500" />}
-                enabled={useImages}
-                onChange={setUseImages}
-            />
-            {useImages && (
-                <div className="pl-2">
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        className="hidden"
-                        accept="image/*"
-                        multiple
-                    />
-                    <button onClick={() => fileInputRef.current?.click()} className="w-full text-sm text-center py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                        {files && files.length > 0 ? `${files.length} تصویر انتخاب شد` : "انتخاب تصاویر..."}
-                    </button>
-                </div>
-            )}
-            
-            <ToggleSwitch 
-                label="ورود لیست دستی قطعات"
-                icon={<FileTextIcon className="w-5 h-5 text-gray-500" />}
-                enabled={useManualList}
-                onChange={setUseManualList}
-            />
-            {useManualList && (
-                 <textarea
-                    value={manualParts}
-                    onChange={(e) => setManualParts(e.target.value)}
-                    placeholder="هر قطعه در یک خط جداگانه، مثال:&#10;سپر جلو&#10;چراغ راست"
-                    rows={4}
-                    className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                 />
-            )}
+        <div className="space-y-4">
+            <div className="bg-white/80 p-4 rounded-xl shadow-md">
+                <label htmlFor="carModel" className="block text-sm font-bold text-gray-700 mb-2">
+                    ۱. مدل خودرو*
+                </label>
+                <input 
+                    id="carModel"
+                    type="text"
+                    value={carModel}
+                    onChange={(e) => setCarModel(e.target.value)}
+                    placeholder="مثال: پژو ۲۰۶ تیپ ۵"
+                    className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+            <div className="bg-white/80 p-4 rounded-xl shadow-md space-y-3">
+                 <h2 className="block text-sm font-bold text-gray-700 mb-2">۲. روش شناسایی قطعات</h2>
+                <ToggleSwitch 
+                    label="تحلیل با تصاویر"
+                    icon={<CameraIcon className="w-5 h-5 text-gray-500" />}
+                    enabled={useImages}
+                    onChange={setUseImages}
+                />
+                {useImages && (
+                    <div className="pl-2">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/*"
+                            multiple
+                        />
+                        <button onClick={() => fileInputRef.current?.click()} className="w-full text-sm text-center py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                            {files && files.length > 0 ? `${files.length} تصویر انتخاب شد` : "انتخاب تصاویر..."}
+                        </button>
+                    </div>
+                )}
+                <hr/>
+                <ToggleSwitch 
+                    label="ورود لیست دستی قطعات"
+                    icon={<FileTextIcon className="w-5 h-5 text-gray-500" />}
+                    enabled={useManualList}
+                    onChange={setUseManualList}
+                />
+                {useManualList && (
+                     <textarea
+                        value={manualParts}
+                        onChange={(e) => setManualParts(e.target.value)}
+                        placeholder="هر قطعه در یک خط جداگانه، مثال:&#10;سپر جلو&#10;چراغ راست"
+                        rows={3}
+                        className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                     />
+                )}
+            </div>
         </div>
       
-        <div className="mt-auto pt-4">
+        <div className="mt-auto pt-4 space-y-2">
             <button
                 onClick={handleStartClick}
                 disabled={isButtonDisabled}
@@ -114,9 +128,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
             >
                 شروع تخمین هزینه
             </button>
-            <p className="text-xs text-gray-400 mt-4 text-center">
-                با ادامه، شما با شرایط و قوانین ما موافقت می‌کنید.
-            </p>
+            {hasResults && (
+                 <button
+                    onClick={onGoToResults}
+                    className="w-full text-indigo-600 font-semibold py-2 px-4 rounded-full hover:bg-indigo-100 transition-colors"
+                >
+                    بازگشت به لیست
+                </button>
+            )}
         </div>
     </div>
   );

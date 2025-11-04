@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { AppScreen, Part, PartSelection } from './types';
 import { analyzeCarDamage, getPartsDetails } from './services/geminiService';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -13,10 +13,34 @@ interface StartAnalysisPayload {
     useManualList: boolean;
 }
 
+const STORAGE_KEY = 'car_damage_estimator_parts';
+
 const App: React.FC = () => {
-  const [screen, setScreen] = useState<AppScreen>(AppScreen.WELCOME);
-  const [parts, setParts] = useState<Part[]>([]);
+  const [parts, setParts] = useState<Part[]>(() => {
+    try {
+      const savedParts = window.localStorage.getItem(STORAGE_KEY);
+      return savedParts ? JSON.parse(savedParts) : [];
+    } catch (error) {
+      console.error("Failed to load parts from storage", error);
+      return [];
+    }
+  });
+
+  const [screen, setScreen] = useState<AppScreen>(() => {
+    const savedParts = window.localStorage.getItem(STORAGE_KEY);
+    return savedParts && JSON.parse(savedParts).length > 0 ? AppScreen.RESULTS : AppScreen.WELCOME;
+  });
+
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
+    } catch (error) {
+      console.error("Failed to save parts to storage", error);
+    }
+  }, [parts]);
+
 
   const handleStart = useCallback(async (payload: StartAnalysisPayload) => {
     const { files, carModel, manualParts, useImages, useManualList } = payload;
@@ -106,13 +130,18 @@ const App: React.FC = () => {
   const handleReset = useCallback(() => {
     setParts([]);
     setError(null);
+    window.localStorage.removeItem(STORAGE_KEY);
     setScreen(AppScreen.WELCOME);
+  }, []);
+
+  const handleGoToResults = useCallback(() => {
+    setScreen(AppScreen.RESULTS);
   }, []);
 
   const renderScreen = () => {
     switch (screen) {
       case AppScreen.WELCOME:
-        return <WelcomeScreen onStart={handleStart} />;
+        return <WelcomeScreen onStart={handleStart} hasResults={parts.length > 0} onGoToResults={handleGoToResults} />;
       case AppScreen.LOADING:
         return (
           <div className="flex flex-col items-center justify-center text-white h-full">
@@ -141,7 +170,7 @@ const App: React.FC = () => {
                     onClick={handleReset}
                     className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-full hover:bg-indigo-700 transition-colors"
                 >
-                    تلاش مجدد
+                    شروع مجدد
                 </button>
             </div>
         );
@@ -150,10 +179,12 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-br from-cyan-400 to-indigo-600 min-h-screen w-full flex items-center justify-center p-4 print:p-0 print:bg-white">
-      <div className="w-full max-w-sm h-[90vh] max-h-[900px] bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden flex flex-col print:shadow-none print:rounded-none print:h-auto print:max-h-none print:max-w-none print:bg-white">
-          <div className="bg-white/50 p-4 border-b border-gray-200 print:hidden">
-              <h1 className="text-center text-xl font-bold text-gray-800">{screen === AppScreen.WELCOME ? "تخمین خسارت خودرو" : "نتایج تخمین هزینه"}</h1>
-          </div>
+      <div className="w-full max-w-sm h-[90vh] max-h-[900px] bg-white/50 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col print:shadow-none print:rounded-none print:h-auto print:max-h-none print:max-w-none print:bg-white">
+          { screen !== AppScreen.WELCOME && (
+              <div className="bg-white/50 p-4 border-b border-gray-200 print:hidden">
+                  <h1 className="text-center text-xl font-bold text-gray-800">نتایج تخمین هزینه</h1>
+              </div>
+          )}
         <div className="flex-grow overflow-y-auto">
             {renderScreen()}
         </div>

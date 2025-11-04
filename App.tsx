@@ -137,6 +137,10 @@ const App: React.FC = () => {
   const handleGoToResults = useCallback(() => {
     setScreen(AppScreen.RESULTS);
   }, []);
+  
+  const handleBackToWelcome = useCallback(() => {
+    setScreen(AppScreen.WELCOME);
+  }, []);
 
   const renderScreen = () => {
     switch (screen) {
@@ -158,7 +162,7 @@ const App: React.FC = () => {
             onAddManualPart={handleAddManualPart}
             onUpdatePart={handleUpdatePart}
             onDeletePart={handleDeletePart}
-            onReset={handleReset}
+            onBack={handleBackToWelcome}
           />
         );
        case AppScreen.ERROR:

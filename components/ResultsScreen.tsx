@@ -9,10 +9,10 @@ interface ResultsScreenProps {
   onAddManualPart: (partName: string) => Promise<void>;
   onUpdatePart: (index: number, field: keyof Part, value: number) => void;
   onDeletePart: (index: number) => void;
-  onReset: () => void;
+  onBack: () => void;
 }
 
-const ResultsScreen: React.FC<ResultsScreenProps> = ({ parts, onPartSelectionChange, onAddManualPart, onUpdatePart, onDeletePart, onReset }) => {
+const ResultsScreen: React.FC<ResultsScreenProps> = ({ parts, onPartSelectionChange, onAddManualPart, onUpdatePart, onDeletePart, onBack }) => {
   const [manualPartName, setManualPartName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
@@ -55,7 +55,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({ parts, onPartSelectionCha
 
   return (
     <div id="results-content" className="p-4 flex flex-col h-full bg-gray-50 print:bg-white print:p-0">
-       <button onClick={onReset} className="absolute top-5 right-5 text-gray-600 hover:text-gray-900 z-10 print:hidden">
+       <button onClick={onBack} className="absolute top-5 right-5 text-gray-600 hover:text-gray-900 z-10 print:hidden">
             <ArrowLeftIcon className="w-6 h-6 transform scale-x-[-1]" />
         </button>
       

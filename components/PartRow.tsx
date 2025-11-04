@@ -72,7 +72,7 @@ const PartRow: React.FC<PartRowProps> = ({ part, index, onSelectionChange, onUpd
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-4 border border-gray-100 print:shadow-none print:border print:rounded-lg">
+    <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
       <div className="flex justify-between items-start mb-3">
         <h4 className="font-bold text-gray-800 text-lg">{part.name}</h4>
         <div className="flex items-center space-i-3 text-gray-500">
@@ -80,14 +80,14 @@ const PartRow: React.FC<PartRowProps> = ({ part, index, onSelectionChange, onUpd
                 href={part.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-blue-600 print:hidden"
+                className="hover:text-blue-600"
                 title="مشاهده در سایت فروشنده"
             >
                 <LinkIcon className="w-5 h-5" />
             </a>
             <button
                 onClick={() => onDelete(index)}
-                className="hover:text-red-600 print:hidden"
+                className="hover:text-red-600"
                 title="حذف قطعه"
             >
                 <Trash2Icon className="w-5 h-5" />
@@ -105,13 +105,13 @@ const PartRow: React.FC<PartRowProps> = ({ part, index, onSelectionChange, onUpd
                  {label}:
                 <div className="flex items-center mr-auto">
                     <EditablePrice value={value} onSave={(newValue) => onUpdate(index, field as keyof Part, newValue)} formatCurrency={formatCurrency} />
-                    <PencilIcon className="w-3 h-3 ml-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity print:hidden" />
+                    <PencilIcon className="w-3 h-3 ml-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
             </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-start space-i-2 print:hidden">
+      <div className="flex items-center justify-start space-i-2">
         <span className="text-sm font-medium text-gray-700 ml-2">انتخاب برای محاسبه:</span>
         <div className="flex rounded-lg p-0.5 bg-gray-100">
           <button

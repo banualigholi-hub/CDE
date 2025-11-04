@@ -182,10 +182,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-cyan-400 to-indigo-600 min-h-screen w-full flex items-center justify-center p-4 print:p-0 print:bg-white">
-      <div className="w-full max-w-sm h-[90vh] max-h-[900px] bg-white/50 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col print:shadow-none print:rounded-none print:h-auto print:max-h-none print:max-w-none print:bg-white">
+    <div className="bg-gradient-to-br from-cyan-400 to-indigo-600 min-h-screen w-full flex items-center justify-center p-4">
+      <div className="app-container w-full max-w-sm h-[90vh] max-h-[900px] bg-white/50 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col">
           { screen !== AppScreen.WELCOME && (
-              <div className="bg-white/50 p-4 border-b border-gray-200 print:hidden">
+              <div className="bg-white/50 p-4 border-b border-gray-200">
                   <h1 className="text-center text-xl font-bold text-gray-800">نتایج تخمین هزینه</h1>
               </div>
           )}

@@ -8,18 +8,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
       body {
         font-family: 'Vazirmatn', sans-serif;
       }
       @media print {
         body, html {
-          background-color: white !important;
-        }
-        #root {
-          padding: 0;
+          background: white !important;
           margin: 0;
+          padding: 0;
+        }
+        /* Hide the entire interactive app container when printing */
+        .app-container {
+          display: none !important;
+        }
+        /* Ensure the print-only report is visible and takes up the page */
+        .print-report-container {
+          display: block !important;
         }
       }
     </style>

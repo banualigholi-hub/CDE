@@ -1,0 +1,5 @@
+{
+  "name": "Car Damage Estimator",
+  "description": "An AI-powered application to estimate the repair costs for damaged cars by analyzing images and looking up part prices from Iranian market sources.",
+  "requestFramePermissions": []
+}
